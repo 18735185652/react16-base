@@ -20,9 +20,13 @@ function createDOM(vdom) {
     if (type === REACT_TEXT) {
         // debugger
         dom = document.createTextNode(props)
+    } else if (typeof type === 'function') {
+        if (type.isReactComponent) {
+            return mountClassComponent(vdom);
+        } else {
+            return mountFunctionComponent(vdom)
 
-    }else if(typeof type === 'function'){
-       return mountFunctionComponent(vdom)
+        }
     } else {
         dom = document.createElement(type)
     }
@@ -46,6 +50,12 @@ function mountFunctionComponent(vdom) {
     let renderVdom = type(props);
     // vdom，老的要渲染的虚拟DOM=renderVdom，方便后面的dom-diff 
     renderVdom.oldRenderVdom = renderVdom;
+    return createDOM(renderVdom)
+}
+function mountClassComponent(vdom) {
+    let { type: classComponent, props } = vdom;
+    let classInstance = new classComponent(props);
+    let renderVdom = classInstance.render()
     return createDOM(renderVdom)
 }
 
