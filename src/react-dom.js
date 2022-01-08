@@ -56,6 +56,8 @@ function mountClassComponent(vdom) {
     let { type: classComponent, props } = vdom;
     let classInstance = new classComponent(props);
     let renderVdom = classInstance.render()
+    // 把上一次render渲染得到的虚拟DOM
+    vdom.oldRenderVdom = classInstance.oldRenderVdom = renderVdom;
     return createDOM(renderVdom)
 }
 
@@ -79,6 +81,8 @@ function updateProps(dom, oldProps = {}, newProps) {
             for (let attr in styleObj) {
                 dom.style[attr] = styleObj[attr];
             }
+        } else if (/^on[A-Z].*/.test(key)) {
+            dom[key.toLowerCase()] = newProps[key];
         } else {
             dom[key] = newProps[key] // dom.className = 'title' dom.id ='title'
         }
@@ -90,9 +94,37 @@ function updateProps(dom, oldProps = {}, newProps) {
         }
     }
 }
+export function findDOM(vdom) {
+    if (!vdom) return null;
+    // 如果vdom上有dom属性， 说明这个vdom是一个原生组件span div p
+    if (vdom.dom) {
+        return vdom.dom;
+    } else {
+        // 它可能是一个函数组件或者类组件
+        let oldRenderVdom = vdom.oldRenderVdom;
+        return findDOM(oldRenderVdom)
+    }
+}
 
+/**
+ * 进行DOM-DIFF 对比
+ * @param {*} parentDOM  父真实DOM节点
+ * @param {*} oldVdom   老的虚拟DOM
+ * @param {*} newVdom   新的虚拟DOM 
+ */
+export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
+    console.log('parentDOM: ', parentDOM);
+    // 获取老的真实DOM
+    let oldDOM = findDOM(oldVdom);
+    let newDOM = createDOM(newVdom);
+    console.log(111, newDOM)
+    parentDOM.replaceChild(newDOM, oldDOM)
+}
 const ReactDom = {
-    render
+    render,
+    compareTwoVdom,
+    findDOM,
+
 }
 
 export default ReactDom;
