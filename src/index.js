@@ -1,11 +1,20 @@
 import React from './react';
 import ReactDOM from './react-dom';
 
-const element = <div id='root' className='code' style={{ color: 'red' }}>
-  hello
-</div>
-console.log('element: ', element);
+// const element = <div id='root' className='code' style={{ color: 'red' }}>
+//   hello
+// </div>
 
+function FunctionComponent(props) {
+  return (
+    <div id='root' className='code' style={{ color: 'red' }}>
+      <span>{props.name}</span>
+      <span>{props.children}</span>
+    </div>
+  )
+}
+
+let element = <FunctionComponent name='hello'>world</FunctionComponent>
 
 /**
   $$typeof: Symbol(react.element)
