@@ -25,7 +25,6 @@ function createDOM(vdom) {
             return mountClassComponent(vdom);
         } else {
             return mountFunctionComponent(vdom)
-
         }
     } else {
         dom = document.createElement(type)
@@ -117,7 +116,6 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom) {
     // 获取老的真实DOM
     let oldDOM = findDOM(oldVdom);
     let newDOM = createDOM(newVdom);
-    console.log(111, newDOM)
     parentDOM.replaceChild(newDOM, oldDOM)
 }
 const ReactDom = {
